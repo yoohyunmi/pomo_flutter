@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "733303567746",
+    "project_id": "flutter-pomofocus",
+    "storage_bucket": "flutter-pomofocus.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:733303567746:android:9c187bfe1232ceff138b9b",
+        "android_client_info": {
+          "package_name": "com.example.pomo_flutter"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAsDUbkqNvu3HBfh_bULJfnJb_rRiE0P9k"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
