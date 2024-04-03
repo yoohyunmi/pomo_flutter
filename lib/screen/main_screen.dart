@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'common/bottom_navigation.dart';
 import 'package:dotted_border/dotted_border.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -212,7 +211,6 @@ class _HomeScreenState extends State<HomeScreen> {
         ],
       ),
       backgroundColor: const Color(0xFFb64748),
-      bottomNavigationBar: const NaviBottom(),
     );
   }
 

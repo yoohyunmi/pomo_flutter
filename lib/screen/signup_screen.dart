@@ -1,8 +1,9 @@
 import 'dart:html';
 
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/gestures.dart';
+//import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:pomo_flutter/screen/login_screen.dart';
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({super.key});
@@ -25,7 +26,7 @@ class _SignupScreenState extends State<SignupScreen> {
           key: _key,
           child: Column(
             children: [
-              const SizedBox(height: 80),
+              const SizedBox(height: 40),
               const Text('✔︎ Pomofocus',
                   style: TextStyle(
                       color: Colors.white,
@@ -82,17 +83,19 @@ class _SignupScreenState extends State<SignupScreen> {
                     color: Color.fromRGBO(227, 204, 204, 1),
                     fontSize: 16,
                   )),
-              const SizedBox(height: 5),
-              RichText(
-                  text: TextSpan(
-                      text: 'Log in',
-                      style: TextStyle(
+              TextButton(
+                  onPressed: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const LoginScreen())),
+                  child: Text('Log in'),
+                  style: TextButton.styleFrom(
+                      primary: Colors.white,
+                      textStyle: TextStyle(
                           color: Colors.white,
                           fontSize: 16,
                           decoration: TextDecoration.underline,
-                          decorationColor: Colors.white),
-                      recognizer: TapGestureRecognizer()
-                        ..onTap = () => Navigator.pushNamed(context, '/login')))
+                          decorationColor: Colors.white)))
             ],
           ),
         ),

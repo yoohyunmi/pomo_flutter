@@ -1,7 +1,7 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
-import 'common/bottom_navigation.dart';
+import 'signup_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -103,21 +103,22 @@ class _LoginScreenState extends State<LoginScreen> {
                   color: Color.fromRGBO(227, 204, 204, 1),
                   fontSize: 16,
                 )),
-            const SizedBox(height: 5),
-            RichText(
-                text: TextSpan(
-                    text: 'Create account',
-                    style: TextStyle(
+            TextButton(
+                onPressed: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const SignupScreen())),
+                child: Text('Create account'),
+                style: TextButton.styleFrom(
+                    primary: Colors.white,
+                    textStyle: TextStyle(
                         color: Colors.white,
                         fontSize: 16,
                         decoration: TextDecoration.underline,
-                        decorationColor: Colors.white),
-                    recognizer: TapGestureRecognizer()
-                      ..onTap = () => Navigator.pushNamed(context, '/signup')))
+                        decorationColor: Colors.white)))
           ],
         ),
       ),
-      bottomNavigationBar: NaviBottom(),
     );
   }
 }
