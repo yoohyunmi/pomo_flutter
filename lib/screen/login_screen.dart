@@ -1,10 +1,16 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
 import 'common/bottom_navigation.dart';
 
-class LoginScreen extends StatelessWidget {
+class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 
+  @override
+  State<LoginScreen> createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -12,7 +18,7 @@ class LoginScreen extends StatelessWidget {
       body: Center(
         child: Column(
           children: [
-            const SizedBox(height: 70),
+            const SizedBox(height: 40),
             const Text('✔︎ Pomofocus',
                 style: TextStyle(
                     color: Colors.white,
@@ -98,12 +104,16 @@ class LoginScreen extends StatelessWidget {
                   fontSize: 16,
                 )),
             const SizedBox(height: 5),
-            const Text('Create account',
-                style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 16,
-                    decoration: TextDecoration.underline,
-                    decorationColor: Colors.white))
+            RichText(
+                text: TextSpan(
+                    text: 'Create account',
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                        decoration: TextDecoration.underline,
+                        decorationColor: Colors.white),
+                    recognizer: TapGestureRecognizer()
+                      ..onTap = () => Navigator.pushNamed(context, '/signup')))
           ],
         ),
       ),

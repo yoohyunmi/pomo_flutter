@@ -1,6 +1,7 @@
 import 'dart:html';
 
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
 class SignupScreen extends StatefulWidget {
@@ -82,12 +83,16 @@ class _SignupScreenState extends State<SignupScreen> {
                     fontSize: 16,
                   )),
               const SizedBox(height: 5),
-              const Text('Log in',
-                  style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 16,
-                      decoration: TextDecoration.underline,
-                      decorationColor: Colors.white))
+              RichText(
+                  text: TextSpan(
+                      text: 'Log in',
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                          decoration: TextDecoration.underline,
+                          decorationColor: Colors.white),
+                      recognizer: TapGestureRecognizer()
+                        ..onTap = () => Navigator.pushNamed(context, '/login')))
             ],
           ),
         ),
@@ -149,6 +154,7 @@ class _SignupScreenState extends State<SignupScreen> {
     return TextButton(
       onPressed: () async {
         if (_key.currentState!.validate()) {
+          print('Goood!!');
           try {
             final Credential = await FirebaseAuth.instance
                 .createUserWithEmailAndPassword(

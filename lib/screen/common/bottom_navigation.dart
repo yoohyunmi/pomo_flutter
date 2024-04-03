@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
 
-class NaviBottom extends StatelessWidget {
+class NaviBottom extends StatefulWidget {
   const NaviBottom({super.key});
 
+  @override
+  State<NaviBottom> createState() => _NaviBottomState();
+}
+
+class _NaviBottomState extends State<NaviBottom> {
   @override
   Widget build(BuildContext context) {
     return BottomNavigationBar(
@@ -17,18 +22,20 @@ class NaviBottom extends StatelessWidget {
         BottomNavigationBarItem(
             icon: Icon(Icons.settings_applications), label: 'Settings'),
         BottomNavigationBarItem(
-            icon: Icon(Icons.person_pin_sharp), label: 'Login')
+            icon: Icon(Icons.person_pin_sharp), label: 'Login'),
       ],
       onTap: (index) {
         switch (index) {
           case 0:
             Navigator.pushNamed(context, '/');
+            setState(() {});
             break;
           case 1:
             Navigator.pushNamed(context, '/');
             break;
           case 2:
             Navigator.pushNamed(context, '/login');
+            setState(() {});
             break;
         }
       },
