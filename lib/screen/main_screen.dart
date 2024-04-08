@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:dotted_border/dotted_border.dart';
+import 'dart:async';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -10,6 +11,52 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   Color? getColor(Set<MaterialState> states) => Colors.white;
+  int _seconds = 60, _minutes = 25;
+  bool _isRunning = false;
+  String _showSeconds = "00", _showMinutes = "25";
+  late Timer _timer;
+  String _text = "START";
+
+  void _startTimer() {
+    _isRunning = true;
+    _timer = Timer.periodic(Duration(seconds: 1), (timer) {
+      if (_seconds == 0) {
+        _seconds = 60;
+      }
+      setState(() {
+        // 25:00 ~ 시작 => 24:60
+        // 00초 후에는 minutes--
+        // 24:00 --> 23:59
+        // minutes, seconds은 무조건 두자리로 보여줌
+        _text = "PAUSE";
+
+        if (_seconds == 60) {
+          _minutes--;
+        }
+        _seconds--;
+
+        if (_seconds.toString().length == 1) {
+          _showSeconds = "0" + _seconds.toString();
+        } else {
+          _showSeconds = _seconds.toString();
+        }
+
+        if (_minutes.toString().length == 1) {
+          _showMinutes = "0" + _minutes.toString();
+        } else {
+          _showMinutes = _minutes.toString();
+        }
+      });
+    });
+  }
+
+  void _pauseTimer() {
+    setState(() {
+      _isRunning = false;
+      _text = "START";
+    });
+    _timer.cancel();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -67,10 +114,10 @@ class _HomeScreenState extends State<HomeScreen> {
                               textAlign: TextAlign.center,
                             )),
                       ),
-                      const SizedBox(
+                      SizedBox(
                         height: 170,
                         child: Text(
-                          "25:00",
+                          '$_showMinutes : $_showSeconds',
                           style: TextStyle(
                             color: Colors.white,
                             fontSize: 110,
@@ -80,7 +127,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       ),
                       TextButton(
-                        onPressed: onStart,
+                        onPressed: _isRunning ? _pauseTimer : _startTimer,
                         style: TextButton.styleFrom(
                           backgroundColor: Colors.white,
                           fixedSize: const Size(180, 60),
@@ -88,8 +135,8 @@ class _HomeScreenState extends State<HomeScreen> {
                             borderRadius: BorderRadius.circular(5),
                           ),
                         ),
-                        child: const Text("START",
-                            style: TextStyle(
+                        child: Text('$_text',
+                            style: const TextStyle(
                               fontSize: 22,
                               color: Color(0xFFa44d4f),
                               fontWeight: FontWeight.bold,
@@ -213,6 +260,4 @@ class _HomeScreenState extends State<HomeScreen> {
       backgroundColor: const Color(0xFFb64748),
     );
   }
-
-  void onStart() {}
 }
