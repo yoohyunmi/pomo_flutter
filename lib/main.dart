@@ -1,18 +1,32 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:pomo_flutter/firebase_options.dart';
+import 'package:pomo_flutter/screen/account_screen.dart';
 
 import 'screen/main_screen.dart';
 import 'screen/login_screen.dart';
 import 'screen/settings_screen.dart';
 
+late FirebaseAuth auth;
 Future<void> main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  auth = FirebaseAuth.instance;
+  print('Reload!!!!!!');
+  if (auth.currentUser != null) {
+    print(auth.currentUser);
+    _loginText = "Account";
+  } else {
+    _loginText = "Login";
+  }
   runApp(const MyApp());
 }
 
+String _loginText = "Login";
+
+@override
 class MyApp extends StatefulWidget {
   const MyApp({super.key});
 
@@ -26,7 +40,9 @@ class _MyAppState extends State<MyApp> {
   final List<Widget> _tabBody = <Widget>[
     const HomeScreen(),
     const SettingScreen(),
-    const LoginScreen()
+    auth.currentUser?.uid != null
+        ? const MyAccountScreen()
+        : const LoginScreen(),
   ];
 
   @override
@@ -42,17 +58,25 @@ class _MyAppState extends State<MyApp> {
         selectedItemColor: const Color(0xFFe3b6b6),
         selectedFontSize: 18,
         currentIndex: _index,
-        items: const [
-          BottomNavigationBarItem(
+        items: [
+          const BottomNavigationBarItem(
               icon: Icon(Icons.receipt_long_outlined), label: 'Report'),
-          BottomNavigationBarItem(
+          const BottomNavigationBarItem(
               icon: Icon(Icons.settings_applications), label: 'Settings'),
           BottomNavigationBarItem(
-              icon: Icon(Icons.person_pin_sharp), label: 'Login'),
+              icon: const Icon(Icons.person_pin_sharp), label: '$_loginText'),
         ],
         onTap: (index) {
           setState(() {
             _index = index;
+            auth.authStateChanges();
+
+            if (auth.currentUser != null) {
+              print(auth.currentUser);
+              _loginText = "Account";
+            } else {
+              _loginText = "Login";
+            }
           });
         },
       ),

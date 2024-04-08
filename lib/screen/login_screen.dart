@@ -1,6 +1,7 @@
-import 'package:flutter/gestures.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
+import '../main.dart';
 import 'signup_screen.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -11,6 +12,10 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+  final _key = GlobalKey<FormState>();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -49,6 +54,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           fontSize: 14,
                           fontWeight: FontWeight.w700)),
                   TextFormField(
+                    controller: _emailController,
                     decoration: InputDecoration(
                       filled: true,
                       fillColor: Colors.grey[200],
@@ -64,6 +70,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           fontSize: 14,
                           fontWeight: FontWeight.w700)),
                   TextFormField(
+                    controller: _passwordController,
                     decoration: InputDecoration(
                       filled: true,
                       fillColor: Colors.grey[200],
@@ -72,7 +79,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   const Spacer(),
                   TextButton(
-                    onPressed: () {},
+                    onPressed: _login,
                     child: Text(
                       'Log in with Email',
                       style: TextStyle(color: Colors.white),
@@ -86,7 +93,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                   ),
                   const Spacer(),
-                  Text('Forgot Password',
+                  const Text('Forgot Password',
                       style: TextStyle(
                           color: Colors.grey,
                           fontSize: 16,
@@ -120,5 +127,35 @@ class _LoginScreenState extends State<LoginScreen> {
         ),
       ),
     );
+  }
+
+  _login() async {
+    try {
+      await FirebaseAuth.instance
+          .signInWithEmailAndPassword(
+              email: _emailController.text, password: _passwordController.text)
+          .then((_) => Navigator.push(
+              context, MaterialPageRoute(builder: (_) => MyApp())));
+    } on FirebaseAuthException catch (e) {
+      print(e.code);
+      String message = '';
+
+      if (e.code == 'user-not-found') {
+        message = 'User not exists!';
+      } else if (e.code == 'wrong-password') {
+        message = 'Password is wrong!';
+      } else if (e.code == 'invalid-email') {
+        message = 'Please enter a valid email!';
+      } else {
+        message = e.code;
+      }
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(
+          message,
+          textAlign: TextAlign.center,
+        ),
+        backgroundColor: Colors.red[900],
+      ));
+    }
   }
 }

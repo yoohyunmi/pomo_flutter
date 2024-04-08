@@ -1,7 +1,6 @@
 import 'dart:html';
 
 import 'package:firebase_auth/firebase_auth.dart';
-//import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:pomo_flutter/screen/login_screen.dart';
 
@@ -16,6 +15,8 @@ class _SignupScreenState extends State<SignupScreen> {
   final _key = GlobalKey<FormState>();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _confirmPasswordController =
+      TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -51,28 +52,26 @@ class _SignupScreenState extends State<SignupScreen> {
                   padding: const EdgeInsets.all(20),
                   child: Column(children: [
                     const Spacer(),
-                    Text('EMAIL',
-                        style: TextStyle(
-                            color: Colors.grey[400],
-                            fontSize: 14,
-                            fontWeight: FontWeight.w700)),
                     emailInput(),
                     const Spacer(),
-                    Text('PASSWORD',
-                        style: TextStyle(
-                            color: Colors.grey[400],
-                            fontSize: 14,
-                            fontWeight: FontWeight.w700)),
                     passwordInput(),
                     const Spacer(),
-                    Text('PASSWORD (CONFIRM)',
-                        style: TextStyle(
-                            color: Colors.grey[400],
-                            fontSize: 14,
-                            fontWeight: FontWeight.w700)),
                     passwordConfirm(),
                     const Spacer(),
-                    signupButton(),
+                    TextButton(
+                      onPressed: _signup,
+                      style: TextButton.styleFrom(
+                        backgroundColor: Colors.grey[850],
+                        fixedSize: Size(330, 50),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(5),
+                        ),
+                      ),
+                      child: Text(
+                        'Sign Up',
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    ),
                     const Spacer(),
                   ]),
                 ),
@@ -106,14 +105,13 @@ class _SignupScreenState extends State<SignupScreen> {
   TextFormField emailInput() {
     return TextFormField(
       controller: _emailController,
-      validator: (val) {
-        if (val!.isEmpty) {
-          return 'The input is empty.';
-        } else {
-          return null;
-        }
-      },
+      validator: _validateEmail,
+      onChanged: _validateEmail,
       decoration: InputDecoration(
+        labelText: 'EMAIL',
+        labelStyle: TextStyle(
+            color: Colors.grey[400], fontSize: 14, fontWeight: FontWeight.w700),
+        floatingLabelAlignment: FloatingLabelAlignment.start,
         filled: true,
         fillColor: Colors.grey[200],
         hintText: 'example@mail.com',
@@ -135,6 +133,10 @@ class _SignupScreenState extends State<SignupScreen> {
         }
       },
       decoration: InputDecoration(
+        labelText: 'PASSWORD',
+        labelStyle: TextStyle(
+            color: Colors.grey[400], fontSize: 14, fontWeight: FontWeight.w700),
+        floatingLabelAlignment: FloatingLabelAlignment.start,
         filled: true,
         fillColor: Colors.grey[200],
         border: InputBorder.none,
@@ -145,7 +147,21 @@ class _SignupScreenState extends State<SignupScreen> {
   TextFormField passwordConfirm() {
     return TextFormField(
       obscureText: true,
+      validator: (val) {
+        if (val!.isEmpty) {
+          return 'The input is empty.';
+        }
+        if (val != _passwordController.text) {
+          return 'Password don\'t match!';
+        } else {
+          return null;
+        }
+      },
       decoration: InputDecoration(
+        labelText: 'PASSWORD (CONFIRM)',
+        labelStyle: TextStyle(
+            color: Colors.grey[400], fontSize: 14, fontWeight: FontWeight.w700),
+        floatingLabelAlignment: FloatingLabelAlignment.start,
         filled: true,
         fillColor: Colors.grey[200],
         border: InputBorder.none,
@@ -153,39 +169,48 @@ class _SignupScreenState extends State<SignupScreen> {
     );
   }
 
-  TextButton signupButton() {
-    return TextButton(
-      onPressed: () async {
-        if (_key.currentState!.validate()) {
-          print('Goood!!');
-          try {
-            final Credential = await FirebaseAuth.instance
-                .createUserWithEmailAndPassword(
-                    email: _emailController.text,
-                    password: _passwordController.text)
-                .then((_) => Navigator.pushNamed(context, '/'));
-          } on FirebaseAuthException catch (e) {
-            if (e.code == 'weak-password') {
-              print('The password provided is too weak.');
-            } else if (e.code == 'email-already-in-use') {
-              print('The account already exists for that email.');
-            }
-          } catch (e) {
-            print(e.toString());
-          }
+  _signup() async {
+    if (_key.currentState!.validate()) {
+      print('Goood!!');
+      try {
+        await FirebaseAuth.instance.createUserWithEmailAndPassword(
+          email: _emailController.text,
+          password: _passwordController.text,
+        );
+//            .then((_) => Navigator.pushNamed(context, '/'));
+        Navigator.pop(context);
+      } on FirebaseAuthException catch (e) {
+        print(e.code);
+        String message = '';
+        if (e.code == 'weak-password') {
+          message = 'The password provided is too weak.';
+        } else if (e.code == 'email-already-in-use') {
+          message = 'The account already exists for that email.';
         }
-      },
-      style: TextButton.styleFrom(
-        backgroundColor: Colors.grey[850],
-        fixedSize: Size(330, 50),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(5),
-        ),
-      ),
-      child: Text(
-        'Sign Up',
-        style: TextStyle(color: Colors.white),
-      ),
-    );
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text(
+            message,
+            textAlign: TextAlign.center,
+          ),
+          backgroundColor: Colors.red[900],
+        ));
+      } catch (e) {
+        print(e.toString());
+      }
+    }
   }
+
+  String? _validateEmail(String? val) {
+    if (val!.isEmpty) {
+      return 'Email is required.';
+    } else if (!isEmailValid(val)) {
+      return 'Enter a valid email address.';
+    } else {
+      return null;
+    }
+  }
+}
+
+bool isEmailValid(String email) {
+  return RegExp(r'^[\w-\.]+@[a-zA-Z]+\.[a-zA-Z]{2,}$').hasMatch(email);
 }
