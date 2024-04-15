@@ -16,15 +16,12 @@ Future<void> main() async {
   auth = FirebaseAuth.instance;
   print('Reload!!!!!!');
   if (auth.currentUser != null) {
-    print(auth.currentUser);
-    _loginText = "Account";
+//    _loginText = "Account";
   } else {
-    _loginText = "Login";
+//    _loginText = "Login";
   }
   runApp(const MyApp());
 }
-
-String _loginText = "Login";
 
 @override
 class MyApp extends StatefulWidget {
@@ -62,21 +59,14 @@ class _MyAppState extends State<MyApp> {
           const BottomNavigationBarItem(
               icon: Icon(Icons.receipt_long_outlined), label: 'Report'),
           const BottomNavigationBarItem(
-              icon: Icon(Icons.settings_applications), label: 'Settings'),
+              icon: Icon(Icons.settings), label: 'Settings'),
           BottomNavigationBarItem(
-              icon: const Icon(Icons.person_pin_sharp), label: '$_loginText'),
+              icon: const Icon(Icons.person_pin_sharp), label: 'Account'),
         ],
         onTap: (index) {
           setState(() {
             _index = index;
             auth.authStateChanges();
-
-            if (auth.currentUser != null) {
-              print(auth.currentUser);
-              _loginText = "Account";
-            } else {
-              _loginText = "Login";
-            }
           });
         },
       ),

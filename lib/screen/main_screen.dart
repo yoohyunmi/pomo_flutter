@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:dotted_border/dotted_border.dart';
+import 'package:audioplayers/audioplayers.dart';
 import 'dart:async';
 
 class HomeScreen extends StatefulWidget {
@@ -16,6 +17,8 @@ class _HomeScreenState extends State<HomeScreen> {
   String _showSeconds = "00", _showMinutes = "25";
   late Timer _timer;
   String _text = "START";
+
+  AudioPlayer sound = AudioPlayer();
 
   void _startTimer() {
     _isRunning = true;
@@ -96,23 +99,52 @@ class _HomeScreenState extends State<HomeScreen> {
                       Padding(
                         padding:
                             EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-                        child: Container(
-                            width: 120,
-                            height: 30,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(3),
-                              color: const Color(0xFFa44d4f),
-                            ),
-                            alignment: Alignment.center,
-                            child: const Text(
-                              "Pomodoro",
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                              ),
-                              textAlign: TextAlign.center,
-                            )),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            Container(
+                                width: 120,
+                                height: 30,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(3),
+                                  color: const Color(0xFFa44d4f),
+                                ),
+                                alignment: Alignment.center,
+                                child: const Text(
+                                  "Pomodoro",
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                )),
+                            Container(
+                                width: 120,
+                                height: 30,
+                                alignment: Alignment.center,
+                                child: const Text(
+                                  "Short Break",
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 18,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                )),
+                            Container(
+                                width: 120,
+                                height: 30,
+                                alignment: Alignment.center,
+                                child: const Text(
+                                  "Long Break",
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 18,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ))
+                          ],
+                        ),
                       ),
                       SizedBox(
                         height: 170,
@@ -127,7 +159,10 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       ),
                       TextButton(
-                        onPressed: _isRunning ? _pauseTimer : _startTimer,
+                        onPressed: () {
+                          sound.play(AssetSource('mouse-click-153941.mp3'));
+                          _isRunning ? _pauseTimer() : _startTimer();
+                        },
                         style: TextButton.styleFrom(
                           backgroundColor: Colors.white,
                           fixedSize: const Size(180, 60),

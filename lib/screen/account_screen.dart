@@ -12,7 +12,8 @@ class MyAccountScreen extends StatefulWidget {
 
 final _user = FirebaseAuth.instance.currentUser;
 String? _email = _user?.email;
-String? _username = _user?.displayName;
+String? _username =
+    _user?.displayName == null ? 'Pomofocus User' : _user?.displayName;
 
 class _MyAccountScreenState extends State<MyAccountScreen> {
   @override
@@ -46,8 +47,8 @@ class _MyAccountScreenState extends State<MyAccountScreen> {
                   subtitle: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('User name : , $_username'),
-                      Text('Email : , $_email')
+                      Text('User name : $_username'),
+                      Text('Email : $_email')
                     ],
                   ),
                 ),
@@ -61,6 +62,9 @@ class _MyAccountScreenState extends State<MyAccountScreen> {
                     onPressed: _signOut,
                     child: Text(
                       'Logout',
+                    ),
+                    style: TextButton.styleFrom(
+                      alignment: Alignment.centerLeft,
                     ),
                   ),
                 ),
