@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:audioplayers/audioplayers.dart';
@@ -24,6 +25,10 @@ class _HomeScreenState extends State<HomeScreen> {
 
   // Add Task 부분
   bool _isAddingTask = false;
+  final TextEditingController _taskInputController = TextEditingController();
+  int _taskIndex = 0;
+
+  FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   void _startTimer() {
     _isRunning = true;
@@ -381,6 +386,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
                 border: InputBorder.none,
               ),
+              controller: _taskInputController,
             ),
             SizedBox(height: 16.0),
             Row(
@@ -396,6 +402,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
                 TextButton(
                   onPressed: () {
+                    _saveTask();
                     toggleAddTask();
                   },
                   style: TextButton.styleFrom(
@@ -415,5 +422,16 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ),
     );
+  }
+
+  _saveTask() async {
+    if (_taskInputController.text.isNotEmpty) {
+      await _firestore.collection("tasks").add({
+        "name": _taskInputController.text,
+        "priority": 1,
+        "timestamp": FieldValue.serverTimestamp(),
+        "project": "",
+      });
+    }
   }
 }
