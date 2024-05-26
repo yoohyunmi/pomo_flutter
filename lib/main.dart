@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -9,6 +10,8 @@ import 'screen/login_screen.dart';
 import 'screen/settings_screen.dart';
 
 late FirebaseAuth auth;
+late String _loginText;
+
 Future<void> main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
@@ -16,9 +19,9 @@ Future<void> main() async {
   auth = FirebaseAuth.instance;
   print('Reload!!!!!!');
   if (auth.currentUser != null) {
-//    _loginText = "Account";
+    _loginText = "Account";
   } else {
-//    _loginText = "Login";
+    _loginText = "Login";
   }
   runApp(const MyApp());
 }
@@ -61,7 +64,7 @@ class _MyAppState extends State<MyApp> {
           const BottomNavigationBarItem(
               icon: Icon(Icons.settings), label: 'Settings'),
           BottomNavigationBarItem(
-              icon: const Icon(Icons.person_pin_sharp), label: 'Account'),
+              icon: const Icon(Icons.person_pin_sharp), label: '$_loginText'),
         ],
         onTap: (index) {
           setState(() {
