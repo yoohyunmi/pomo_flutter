@@ -17,8 +17,13 @@ class _HomeScreenState extends State<HomeScreen> {
   String _showSeconds = "00", _showMinutes = "25";
   late Timer _timer;
   String _text = "START";
+  late List<bool> isSelected;
+  bool isWorking = true, isShortBreak = false, isLongBreak = false;
 
   AudioPlayer sound = AudioPlayer();
+
+  // Add Task 부분
+  bool _isAddingTask = false;
 
   void _startTimer() {
     _isRunning = true;
@@ -62,6 +67,12 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   @override
+  void initState() {
+    isSelected = [isWorking, isShortBreak, isLongBreak];
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -102,47 +113,54 @@ class _HomeScreenState extends State<HomeScreen> {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
-                            Container(
-                                width: 120,
-                                height: 30,
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(3),
-                                  color: const Color(0xFFa44d4f),
-                                ),
-                                alignment: Alignment.center,
-                                child: const Text(
-                                  "Pomodoro",
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                  textAlign: TextAlign.center,
-                                )),
-                            Container(
-                                width: 120,
-                                height: 30,
-                                alignment: Alignment.center,
-                                child: const Text(
-                                  "Short Break",
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 18,
-                                  ),
-                                  textAlign: TextAlign.center,
-                                )),
-                            Container(
-                                width: 120,
-                                height: 30,
-                                alignment: Alignment.center,
-                                child: const Text(
-                                  "Long Break",
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 18,
-                                  ),
-                                  textAlign: TextAlign.center,
-                                ))
+                            ToggleButtons(
+                              renderBorder: false,
+                              children: [
+                                Container(
+                                    width: 120,
+                                    height: 30,
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(3),
+                                      color: const Color(0xFFa44d4f),
+                                    ),
+                                    alignment: Alignment.center,
+                                    child: const Text(
+                                      "Pomodoro",
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                      textAlign: TextAlign.center,
+                                    )),
+                                Container(
+                                    width: 120,
+                                    height: 30,
+                                    alignment: Alignment.center,
+                                    child: const Text(
+                                      "Short Break",
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 18,
+                                      ),
+                                      textAlign: TextAlign.center,
+                                    )),
+                                Container(
+                                    width: 120,
+                                    height: 30,
+                                    alignment: Alignment.center,
+                                    child: const Text(
+                                      "Long Break",
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 18,
+                                      ),
+                                      textAlign: TextAlign.center,
+                                    ))
+                              ],
+                              isSelected: isSelected,
+                              onPressed: toggleSelect,
+                            )
                           ],
                         ),
                       ),
@@ -247,52 +265,155 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
           Expanded(
-              child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                SizedBox(
-                  height: 10,
-                ),
-                SizedBox(
-                  width: 500.0,
-                  height: 70,
-                  child: DottedBorder(
-                    dashPattern: [3, 2.4],
-                    color: Color(0xFFe3b6b6),
-                    strokeWidth: 1,
-                    borderType: BorderType.RRect,
-                    borderPadding: EdgeInsets.all(1),
-                    radius: const Radius.circular(10),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: const Color.fromARGB(255, 163, 56, 58),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      alignment: Alignment.center,
-                      child: const Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Icons.playlist_add_rounded,
-                            color: Color(0xFFe3b6b6),
-                          ),
-                          Text(
-                            " Add Task",
-                            style: TextStyle(
-                              color: Color(0xFFe3b6b6),
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              ])),
+              child: SizedBox(
+            width: 500,
+            child: AnimatedSwitcher(
+              duration: Duration(milliseconds: 300),
+              transitionBuilder: (Widget child, Animation<double> animation) {
+                return FadeTransition(child: child, opacity: animation);
+              },
+              child: _isAddingTask ? _taskInputCard() : _addTaskButton(),
+            ),
+          )),
         ],
       ),
       backgroundColor: const Color(0xFFb64748),
+    );
+  }
+
+  void toggleSelect(int index) {
+    if (index == 0) {
+      isWorking = true;
+      isShortBreak = false;
+      isLongBreak = false;
+    } else if (index == 1) {
+      isWorking = false;
+      isShortBreak = true;
+      isLongBreak = false;
+    } else {
+      isWorking = false;
+      isShortBreak = false;
+      isLongBreak = true;
+    }
+
+    setState(() {
+      isSelected = [isWorking, isShortBreak, isLongBreak];
+    });
+  }
+
+  void toggleAddTask() {
+    setState(() {
+      _isAddingTask = !_isAddingTask;
+    });
+  }
+
+  Widget _addTaskButton() {
+    return Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
+      SizedBox(
+        height: 10,
+      ),
+      SizedBox(
+        width: 500.0,
+        height: 70,
+        child: DottedBorder(
+          dashPattern: [3, 2.4],
+          color: Color(0xFFe3b6b6),
+          strokeWidth: 1,
+          borderType: BorderType.RRect,
+          borderPadding: EdgeInsets.all(1),
+          radius: const Radius.circular(10),
+          child: GestureDetector(
+            onTap: () {
+              print('click!! ${_isAddingTask}');
+              toggleAddTask();
+            },
+            child: MouseRegion(
+              // 마우스 hover 시 pointer 모양
+              cursor: SystemMouseCursors.click,
+              child: Container(
+                decoration: BoxDecoration(
+                  color: const Color.fromARGB(255, 163, 56, 58),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                alignment: Alignment.center,
+                child: const Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.playlist_add_rounded,
+                      color: Color(0xFFe3b6b6),
+                    ),
+                    Text(
+                      " Add Task",
+                      style: TextStyle(
+                        color: Color(0xFFe3b6b6),
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    ]);
+  }
+
+  Widget _taskInputCard() {
+    return Card(
+      key: ValueKey('TaskInputCard'),
+      margin: EdgeInsets.all(16.0),
+      child: Padding(
+        padding: EdgeInsets.all(16.0),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(
+              decoration: InputDecoration(
+                hintText: 'What are you working on?',
+                hintStyle: TextStyle(
+                  color: Colors.grey[400],
+                  fontWeight: FontWeight.bold,
+                  fontStyle: FontStyle.italic,
+                  fontSize: 20,
+                ),
+                border: InputBorder.none,
+              ),
+            ),
+            SizedBox(height: 16.0),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                TextButton(
+                  onPressed: toggleAddTask,
+                  child: Text(
+                    'Cancel',
+                    style: TextStyle(
+                        color: Colors.grey[600], fontWeight: FontWeight.w600),
+                  ),
+                ),
+                TextButton(
+                  onPressed: () {
+                    toggleAddTask();
+                  },
+                  style: TextButton.styleFrom(
+                    backgroundColor: Colors.black,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(5),
+                    ),
+                  ),
+                  child: Text('Save',
+                      style: const TextStyle(
+                        color: Colors.white,
+                      )),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
